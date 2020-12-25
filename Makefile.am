@@ -114,6 +114,9 @@ $(libnm_core_lib_h_pub_mkenums):     config-extra.h
 libnm-core/.dirstamp:                config-extra.h
 shared/.dirstamp:                    config-extra.h
 shared/nm-glib-aux/.dirstamp:        config-extra.h
+shared/nm-glib-aux/tests/.dirstamp:  config-extra.h
+shared/nm-platform/.dirstamp:        config-extra.h
+shared/nm-platform/tests/.dirstamp:  config-extra.h
 shared/nm-std-aux/.dirstamp:         config-extra.h
 shared/nm-udev-aux/.dirstamp:        config-extra.h
 shared/systemd/.dirstamp:            config-extra.h
@@ -457,6 +460,59 @@ shared_nm_udev_aux_libnm_udev_aux_la_LDFLAGS = \
 shared_nm_udev_aux_libnm_udev_aux_la_LIBADD = \
 	$(GLIB_LIBS) \
 	$(LIBUDEV_LIBS) \
+	$(NULL)
+
+###############################################################################
+
+noinst_LTLIBRARIES += shared/nm-platform/libnm-platform.la
+
+shared_nm_platform_libnm_platform_la_CPPFLAGS = \
+	$(shared_nm_glib_aux_cppflags) \
+	$(NULL)
+
+shared_nm_platform_libnm_platform_la_SOURCES = \
+	shared/nm-platform/nm-netlink.c \
+	shared/nm-platform/nm-netlink.h \
+	$(NULL)
+
+shared_nm_platform_libnm_platform_la_LDFLAGS = \
+	$(CODE_COVERAGE_LDFLAGS) \
+	$(SANITIZER_LIB_LDFLAGS) \
+	$(NULL)
+
+shared_nm_platform_libnm_platform_la_LIBADD = \
+	$(GLIB_LIBS) \
+	$(NULL)
+
+###############################################################################
+
+check_programs += shared/nm-platform/tests/test-nm-platform
+
+shared_nm_platform_tests_test_nm_platform_CPPFLAGS = \
+	$(dflt_cppflags) \
+	-I$(srcdir)/shared \
+	-DNETWORKMANAGER_COMPILATION_TEST \
+	-DNETWORKMANAGER_COMPILATION='(NM_NETWORKMANAGER_COMPILATION_GLIB|NM_NETWORKMANAGER_COMPILATION_WITH_GLIB_I18N_PROG)' \
+	$(CODE_COVERAGE_CFLAGS) \
+	$(GLIB_CFLAGS) \
+	$(SANITIZER_LIB_CFLAGS) \
+	$(NULL)
+
+shared_nm_platform_tests_test_nm_platform_LDFLAGS = \
+	$(CODE_COVERAGE_LDFLAGS) \
+	$(SANITIZER_EXEC_LDFLAGS) \
+	$(NULL)
+
+shared_nm_platform_tests_test_nm_platform_LDADD = \
+	shared/nm-platform/libnm-platform.la \
+	shared/nm-glib-aux/libnm-glib-aux.la \
+	shared/nm-std-aux/libnm-std-aux.la \
+	shared/libcsiphash.la \
+	$(GLIB_LIBS) \
+	$(NULL)
+
+EXTRA_DIST += \
+	shared/nm-platform/tests/meson.build \
 	$(NULL)
 
 ###############################################################################
@@ -2113,9 +2169,6 @@ src_libNetworkManagerBase_la_SOURCES = \
 	src/NetworkManagerUtils.c \
 	src/NetworkManagerUtils.h \
 	\
-	src/platform/nm-netlink.c \
-	src/platform/nm-netlink.h \
-	\
 	src/platform/nmp-netns.c \
 	src/platform/nmp-netns.h \
 	src/platform/nmp-object.c \
@@ -2384,6 +2437,7 @@ src_libNetworkManager_la_LIBADD = \
 	libnm-core/libnm-core.la \
 	$(libnm_crypto_lib) \
 	libnm-core/nm-libnm-core-intern/libnm-libnm-core-intern.la \
+	shared/nm-platform/libnm-platform.la \
 	shared/nm-udev-aux/libnm-udev-aux.la \
 	shared/nm-glib-aux/libnm-glib-aux.la \
 	shared/nm-std-aux/libnm-std-aux.la \
@@ -2494,6 +2548,7 @@ src_nm_iface_helper_LDADD = \
 	libnm-core/libnm-core.la \
 	$(libnm_crypto_lib) \
 	libnm-core/nm-libnm-core-intern/libnm-libnm-core-intern.la \
+	shared/nm-platform/libnm-platform.la \
 	shared/nm-udev-aux/libnm-udev-aux.la \
 	shared/nm-glib-aux/libnm-glib-aux.la \
 	shared/nm-std-aux/libnm-std-aux.la \
@@ -2545,6 +2600,7 @@ src_initrd_nm_initrd_generator_LDADD = \
 	libnm-core/libnm-core.la \
 	$(libnm_crypto_lib) \
 	libnm-core/nm-libnm-core-intern/libnm-libnm-core-intern.la \
+	shared/nm-platform/libnm-platform.la \
 	shared/nm-udev-aux/libnm-udev-aux.la \
 	shared/nm-glib-aux/libnm-glib-aux.la \
 	shared/nm-std-aux/libnm-std-aux.la \
